@@ -1,0 +1,205 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D17B935A1420AE58004ED060 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = D17B93591420AE58004ED060 /* main.c */; };
+		D17B935C1420AE58004ED060 /* ParPi.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = D17B935B1420AE58004ED060 /* ParPi.1 */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D17B93531420AE57004ED060 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				D17B935C1420AE58004ED060 /* ParPi.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		D17B93551420AE58004ED060 /* ParPi */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ParPi; sourceTree = BUILT_PRODUCTS_DIR; };
+		D17B93591420AE58004ED060 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		D17B935B1420AE58004ED060 /* ParPi.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ParPi.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D17B93521420AE57004ED060 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D17B934A1420AE57004ED060 = {
+			isa = PBXGroup;
+			children = (
+				D17B93581420AE58004ED060 /* ParPi */,
+				D17B93561420AE58004ED060 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D17B93561420AE58004ED060 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D17B93551420AE58004ED060 /* ParPi */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D17B93581420AE58004ED060 /* ParPi */ = {
+			isa = PBXGroup;
+			children = (
+				D17B93591420AE58004ED060 /* main.c */,
+				D17B935B1420AE58004ED060 /* ParPi.1 */,
+			);
+			path = ParPi;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D17B93541420AE57004ED060 /* ParPi */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D17B935F1420AE58004ED060 /* Build configuration list for PBXNativeTarget "ParPi" */;
+			buildPhases = (
+				D17B93511420AE57004ED060 /* Sources */,
+				D17B93521420AE57004ED060 /* Frameworks */,
+				D17B93531420AE57004ED060 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ParPi;
+			productName = ParPi;
+			productReference = D17B93551420AE58004ED060 /* ParPi */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D17B934C1420AE57004ED060 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = D17B934F1420AE57004ED060 /* Build configuration list for PBXProject "ParPi" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = D17B934A1420AE57004ED060;
+			productRefGroup = D17B93561420AE58004ED060 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D17B93541420AE57004ED060 /* ParPi */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D17B93511420AE57004ED060 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D17B935A1420AE58004ED060 /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D17B935D1420AE58004ED060 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		D17B935E1420AE58004ED060 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		D17B93601420AE58004ED060 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		D17B93611420AE58004ED060 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D17B934F1420AE57004ED060 /* Build configuration list for PBXProject "ParPi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D17B935D1420AE58004ED060 /* Debug */,
+				D17B935E1420AE58004ED060 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D17B935F1420AE58004ED060 /* Build configuration list for PBXNativeTarget "ParPi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D17B93601420AE58004ED060 /* Debug */,
+				D17B93611420AE58004ED060 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D17B934C1420AE57004ED060 /* Project object */;
+}
