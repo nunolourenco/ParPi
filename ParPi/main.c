@@ -17,11 +17,11 @@
 #include <sys/select.h>
 #include <limits.h>
 #include <string.h>
+#include <errno.h>
 
 
 
-
-#define NCORES 4
+#define NCORES 2
 #define RESOLUTION 100000000
 
 #define BUFFER 100
@@ -38,6 +38,11 @@ void buildSelect();
 
 
 int main(int argc, const char * argv[]) {
+
+    clock_t start, stop;
+    double duration;
+    start = clock();
+    init_time();
     
     int worker;
     int workToDo;
@@ -64,7 +69,6 @@ int main(int argc, const char * argv[]) {
     }
     
     /* Master */
-    printf("Master\n");
     
     int points_inside, ready_fd, received_workers = 0;
     ssize_t nbytes;
@@ -73,12 +77,11 @@ int main(int argc, const char * argv[]) {
     while (received_workers < NCORES) {
         buildSelect();
         ready_fd = select(pipe_fd[NCORES-1][0]+1, &pipeinfo, (fd_set *) 0, (fd_set *) 0, NULL);
-        printf("%d pipes ready\n", ready_fd);
-        if (ready_fd < 0) {
+        if (ready_fd < 0 && errno != 4) {
 			perror("select");
-			exit(EXIT_FAILURE);
+			exit(errno);
 		}
-    
+        
         int listnum;
         for (listnum = 0; listnum < NCORES; listnum++) {
             if (FD_ISSET(pipe_fd[listnum][0],&pipeinfo)) {
@@ -86,17 +89,20 @@ int main(int argc, const char * argv[]) {
                 int value;
                 sscanf(readbuffer,"%d\n", &value);
                 points_inside += value;
-                printf("got: %d\n", value);
                 received_workers++;
             }    
         }
     }
-    printf("PI=%d\n", 4 * points_inside/(float) RESOLUTION);
-    
+    printf("PI=%f\n", 4 * (points_inside/(float) RESOLUTION));
+    printf("Done in %d\n", get_time());
+    stop = clock();
+    duration = ( double ) ( stop - start ) / CLOCKS_PER_SEC;
+	// show the time spent in the operation
+	printf("Time taken to process log file: %.3lf seconds\n", duration);
+    return 0;
 }
 
 void doWork(int experiments, int pipe) {
-    printf("Im in worker %d\n", getpid());
     setupRand();
     int i,c=0;
     char str[30];
@@ -107,7 +113,6 @@ void doWork(int experiments, int pipe) {
     }
     sprintf(str,"%d\n",c);
     write(pipe, str, strlen(str)+1);
-    printf("done %d in %d \n", c, experiments);
 }
 
 void buildSelect() {
@@ -133,4 +138,18 @@ void setupRand() {
 // set a limit for the random number generator
 float randint() {
     return rand() / (float) RAND_MAX;
+}
+
+
+static struct timeval start_time;
+
+void init_time() {
+    gettimeofday(&start_time, NULL);
+}
+
+int get_time() {
+    struct timeval t;
+    gettimeofday(&t, NULL);
+    return (int) (t.tv_sec - start_time.tv_sec) * 1000000
+    + (t.tv_usec - start_time.tv_usec);
 }
