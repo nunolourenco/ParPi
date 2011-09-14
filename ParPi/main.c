@@ -27,7 +27,7 @@
 #define BUFFER 100
 
 int pid[NCORES];
-int pipe_fd[NCORES];
+int pipe_fd[NCORES][2];
 fd_set pipeinfo;
 
 void setupRand();
@@ -39,13 +39,14 @@ void buildSelect();
 
 int main(int argc, const char * argv[]) {
     
-    if (pipe(pipe_fd) < 0) {
-        perror ("Failed to create pipes.");
-        exit(1);
-    }
     int worker;
     int workToDo;
     for (worker = 0; worker < NCORES; worker++) {
+        if (pipe(pipe_fd[worker]) < 0) {
+            perror ("Failed to create pipes.");
+            exit(1);
+        }
+        
         if ((pid[worker]=fork()) < 0) {
             perror ("Fork failed.");
             exit(1);
@@ -56,26 +57,41 @@ int main(int argc, const char * argv[]) {
             if (worker == NCORES-1) {
                 workToDo += RESOLUTION % NCORES;
             }
-            doWork(workToDo, pipe_fd[worker]);
+            doWork(workToDo, pipe_fd[worker][1]);
             exit(0);
         }
+        
     }
     
     /* Master */
     printf("Master\n");
     
+    int points_inside, ready_fd, received_workers = 0;
+    ssize_t nbytes;
+    char readbuffer[BUFFER];
     
-    int ready_fd;
-    while (1) {
+    while (received_workers < NCORES) {
         buildSelect();
-        ready_fd = select(pipe_fd[NCORES-1]+1, &pipeinfo, (fd_set *) 0, (fd_set *) 0, NULL);
+        ready_fd = select(pipe_fd[NCORES-1][0]+1, &pipeinfo, (fd_set *) 0, (fd_set *) 0, NULL);
         printf("%d pipes ready\n", ready_fd);
         if (ready_fd < 0) {
 			perror("select");
 			exit(EXIT_FAILURE);
 		}
     
+        int listnum;
+        for (listnum = 0; listnum < NCORES; listnum++) {
+            if (FD_ISSET(pipe_fd[listnum][0],&pipeinfo)) {
+                nbytes = read(pipe_fd[listnum][0], readbuffer, sizeof(readbuffer));
+                int value;
+                sscanf(readbuffer,"%d\n", &value);
+                points_inside += value;
+                printf("got: %d\n", value);
+                received_workers++;
+            }    
+        }
     }
+    printf("PI=%d\n", 4 * points_inside/(float) RESOLUTION);
     
 }
 
@@ -89,16 +105,16 @@ void doWork(int experiments, int pipe) {
         float y = randint();
         c += isInsideCircle(x, y);
     }
-    sprintf(str,"%d",c);
+    sprintf(str,"%d\n",c);
     write(pipe, str, strlen(str)+1);
-    printf("done\n");
+    printf("done %d in %d \n", c, experiments);
 }
 
 void buildSelect() {
     int i;
     FD_ZERO(&pipeinfo);
     for (i=0; i < NCORES; i++) {
-        FD_SET(pipe_fd[i], &pipeinfo);
+        FD_SET(pipe_fd[i][0], &pipeinfo);
     }
 }
 
