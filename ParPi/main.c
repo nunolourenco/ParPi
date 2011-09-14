@@ -22,7 +22,7 @@
 
 
 #define NCORES 2
-#define RESOLUTION 100000000
+#define RESOLUTION 1000000000
 
 #define BUFFER 100
 
@@ -35,17 +35,18 @@ float randint();
 int isInsideCircle(float x,float y);
 void doWork(int experiments, int pipe);
 void buildSelect();
-
-
+void init_time();
+void master();
+int get_time();
 int main(int argc, const char * argv[]) {
 
     clock_t start, stop;
     double duration;
     start = clock();
-    init_time();
+/*    init_time();*/
     
     int worker;
-    int workToDo;
+    long workToDo;
     for (worker = 0; worker < NCORES; worker++) {
         if (pipe(pipe_fd[worker]) < 0) {
             perror ("Failed to create pipes.");
@@ -67,39 +68,18 @@ int main(int argc, const char * argv[]) {
         }
         
     }
-    
-    /* Master */
-    
-    int points_inside, ready_fd, received_workers = 0;
-    ssize_t nbytes;
-    char readbuffer[BUFFER];
-    
-    while (received_workers < NCORES) {
-        buildSelect();
-        ready_fd = select(pipe_fd[NCORES-1][0]+1, &pipeinfo, (fd_set *) 0, (fd_set *) 0, NULL);
-        if (ready_fd < 0 && errno != 4) {
-			perror("select");
-			exit(errno);
-		}
-        
-        int listnum;
-        for (listnum = 0; listnum < NCORES; listnum++) {
-            if (FD_ISSET(pipe_fd[listnum][0],&pipeinfo)) {
-                nbytes = read(pipe_fd[listnum][0], readbuffer, sizeof(readbuffer));
-                int value;
-                sscanf(readbuffer,"%d\n", &value);
-                points_inside += value;
-                received_workers++;
-            }    
-        }
+    master();
+    for (worker = 0; worker < NCORES; worker++) {
+
+      wait(NULL);
     }
-    printf("PI=%f\n", 4 * (points_inside/(float) RESOLUTION));
-    printf("Done in %d\n", get_time());
     stop = clock();
-    duration = ( double ) ( stop - start ) / CLOCKS_PER_SEC;
-	// show the time spent in the operation
-	printf("Time taken to process log file: %.3lf seconds\n", duration);
-    return 0;
+    duration = ( double ) ( stop - start ) / (CLOCKS_PER_SEC);
+    // show the time spent in the operation
+    printf("Time taken to process log file: %.3lf seconds\n", duration);
+
+    
+        return 0;
 }
 
 void doWork(int experiments, int pipe) {
@@ -138,6 +118,37 @@ void setupRand() {
 // set a limit for the random number generator
 float randint() {
     return rand() / (float) RAND_MAX;
+}
+
+
+void master() {
+/* Master */
+    
+    int points_inside, ready_fd, received_workers = 0;
+    ssize_t nbytes;
+    char readbuffer[BUFFER];
+    
+    while (received_workers < NCORES) {
+        buildSelect();
+        ready_fd = select(pipe_fd[NCORES-1][0]+1, &pipeinfo, (fd_set *) 0, (fd_set *) 0, NULL);
+        if (ready_fd < 0 && errno != 4) {
+			perror("select");
+			exit(errno);
+		}
+        
+        int listnum;
+        for (listnum = 0; listnum < NCORES; listnum++) {
+            if (FD_ISSET(pipe_fd[listnum][0],&pipeinfo)) {
+                nbytes = read(pipe_fd[listnum][0], readbuffer, sizeof(readbuffer));
+                int value;
+                sscanf(readbuffer,"%d\n", &value);
+                points_inside += value;
+                received_workers++;
+            }    
+        }
+    }
+    printf("PI=%f\n", 4 * (points_inside/(float) RESOLUTION));
+    printf("Done in %d\n", get_time());
 }
 
 
