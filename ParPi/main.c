@@ -22,7 +22,7 @@
 
 
 #define NCORES 2
-#define RESOLUTION 1000000000
+#define RESOLUTION 100000000
 
 #define BUFFER 100
 
@@ -31,20 +31,12 @@ int pipe_fd[NCORES][2];
 fd_set pipeinfo;
 
 void setupRand();
-float randint();
+float randfloat();
 int isInsideCircle(float x,float y);
 void doWork(int experiments, int pipe);
 void buildSelect();
-void init_time();
 void master();
-int get_time();
 int main(int argc, const char * argv[]) {
-
-    clock_t start, stop;
-    double duration;
-    start = clock();
-/*    init_time();*/
-    
     int worker;
     long workToDo;
     for (worker = 0; worker < NCORES; worker++) {
@@ -70,15 +62,8 @@ int main(int argc, const char * argv[]) {
     }
     master();
     for (worker = 0; worker < NCORES; worker++) {
-
       wait(NULL);
     }
-    stop = clock();
-    duration = ( double ) ( stop - start ) / (CLOCKS_PER_SEC);
-    // show the time spent in the operation
-    printf("Time taken to process log file: %.3lf seconds\n", duration);
-
-    
         return 0;
 }
 
@@ -87,8 +72,8 @@ void doWork(int experiments, int pipe) {
     int i,c=0;
     char str[30];
     for (i=0; i<experiments; i++) {
-        float x = randint();
-        float y = randint();
+        float x = randfloat();
+        float y = randfloat();
         c += isInsideCircle(x, y);
     }
     sprintf(str,"%d\n",c);
@@ -116,7 +101,7 @@ void setupRand() {
 }
 
 // set a limit for the random number generator
-float randint() {
+float randfloat() {
     return rand() / (float) RAND_MAX;
 }
 
@@ -148,19 +133,6 @@ void master() {
         }
     }
     printf("PI=%f\n", 4 * (points_inside/(float) RESOLUTION));
-    printf("Done in %d\n", get_time());
 }
 
 
-static struct timeval start_time;
-
-void init_time() {
-    gettimeofday(&start_time, NULL);
-}
-
-int get_time() {
-    struct timeval t;
-    gettimeofday(&t, NULL);
-    return (int) (t.tv_sec - start_time.tv_sec) * 1000000
-    + (t.tv_usec - start_time.tv_usec);
-}
