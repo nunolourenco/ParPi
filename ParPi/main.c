@@ -7,6 +7,7 @@
 //
 
 #include <stdio.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
@@ -29,7 +30,11 @@
 int pid[NCORES];
 int pipe_fd[NCORES][2];
 fd_set pipeinfo;
+int handle_signals = 0;
 
+
+void workers_sigint_handler(int signum);
+void sigint_handler(int signum);
 void setupRand();
 float randfloat();
 int isInsideCircle(float x,float y);
@@ -39,6 +44,10 @@ void master();
 int main(int argc, const char * argv[]) {
     int worker;
     long workToDo;
+    if(argc == 2) {
+      printf("Press <CTRL>-C to close the application\n");
+      handle_signals = atoi(argv[1]);
+    }
     for (worker = 0; worker < NCORES; worker++) {
         if (pipe(pipe_fd[worker]) < 0) {
             perror ("Failed to create pipes.");
@@ -51,12 +60,20 @@ int main(int argc, const char * argv[]) {
         }
         
         if (pid[worker] == 0) {
+            if(handle_signals) {
+              signal(SIGINT, workers_sigint_handler);
+            }
             workToDo = RESOLUTION / NCORES;
             if (worker == NCORES-1) {
                 workToDo += RESOLUTION % NCORES;
             }
             doWork(workToDo, pipe_fd[worker][1]);
-            exit(0);
+            if(handle_signals) {
+              pause();
+            }
+            else {
+              exit(0);
+            }
         }
         
     }
@@ -64,7 +81,21 @@ int main(int argc, const char * argv[]) {
     for (worker = 0; worker < NCORES; worker++) {
       wait(NULL);
     }
-        return 0;
+    return 0;
+}
+
+void master_sigint_handler(int signum) {
+  int i;
+  printf("Received a sigint signal! Aborting all calculations!\n");
+  for(i = 0; i < NCORES;i++){
+    kill(pid[i], SIGINT);
+  }
+  exit(0);
+}
+
+void workers_sigint_handler(int signum) {
+  printf("Received a sigint! Father shutting me down\n");
+  exit(0);
 }
 
 void doWork(int experiments, int pipe) {
@@ -109,10 +140,12 @@ float randfloat() {
 void master() {
 /* Master */
     
+    if(handle_signals) {
+      signal(SIGINT, workers_sigint_handler);
+    }
     int points_inside, ready_fd, received_workers = 0;
     ssize_t nbytes;
     char readbuffer[BUFFER];
-    
     while (received_workers < NCORES) {
         buildSelect();
         ready_fd = select(pipe_fd[NCORES-1][0]+1, &pipeinfo, (fd_set *) 0, (fd_set *) 0, NULL);
